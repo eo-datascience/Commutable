@@ -20,11 +20,18 @@ import {
 import parity from './parity.json'
 
 // Python uses math.erf; this uses Hart's rational approximation. Both are
-// accurate to around 1e-15, so the tolerance is set just above double
-// precision rather than at the accuracy of an approximation. Anything that
-// crosses this is a real disagreement between the two implementations, not
-// a rounding difference.
-const SHARE_TOLERANCE = 1e-12
+// accurate to around 1e-15, so this is not set at the accuracy of either.
+//
+// It is set by what the fixtures can promise. They are rounded on the way
+// out, because the last bits of a double are not portable and CI compares
+// the file byte for byte against a freshly generated one. Shares are
+// written to 1e-10, so an assertion tighter than that would be testing the
+// rounding rather than the implementation.
+//
+// 1e-9 is still a hundred times tighter than the mistake this exists to
+// catch: swapping Hart's approximation for Abramowitz and Stegun 7.1.26
+// moves a share by about 1.5e-7, which this would fail on immediately.
+const SHARE_TOLERANCE = 1e-9
 
 // Budgets are shown to the nearest pound, so agreement within a penny is
 // far tighter than anything a visitor could see.

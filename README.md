@@ -186,9 +186,19 @@ cd frontend && npm test     # 174 tests
 The affordability calculation exists in Python and in TypeScript, because the
 pipeline needs it to validate and the browser needs it to answer a new budget
 with no server to ask. Two implementations of one formula drift, so the Python
-side writes fixtures from its own answers and the TypeScript tests assert they
-are reproduced to 1e-12. CI regenerates the fixtures and fails if they differ
-from the committed file.
+side writes fixtures from its own answers, the TypeScript tests assert they are
+reproduced, and CI regenerates the fixtures and fails if they differ from the
+committed file.
+
+The fixtures are rounded on the way out, which is not fussiness. The first CI
+run failed because the file had been generated on Windows and regenerated on
+Linux, and the two disagreed in the last two bits of a double: 1479.0003490991685
+against 1479.0003490991671. Shares are now written to 1e-10 and asserted to
+1e-9, budgets to a hundredth of a penny and asserted to a penny. Both are
+several orders of magnitude tighter than the mistake the fixtures exist to
+catch, since swapping Hart's approximation for Abramowitz and Stegun 7.1.26
+moves a share by about 1.5e-7, and the measured disagreement between the two
+implementations is nothing but that rounding.
 
 The geography tests run against the real London boundaries rather than invented
 squares. Both bugs this project has had were about real shapes, and neither
