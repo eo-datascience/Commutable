@@ -9,11 +9,7 @@ for a partner or a second job and the map answers for both.
 
 Live site: _(add the URL once deployed)_
 
-> **Screenshot to add here after the first real build.** There is deliberately
-> none yet: the only build so far used fabricated numbers, and a screenshot of
-> invented figures is worse than no screenshot. Run `python scripts/build.py`
-> against the real inputs, then capture the map and save it to
-> `docs/screenshot.png`.
+![Commutable showing where a £1,200 budget reaches within 60 minutes of Canary Wharf. Districts within reach are shaded blue by the share of their one bedroom market the budget covers, everywhere beyond the time limit is grey, and districts with no published rent figures are hatched. The panel on the right has SE2 Abbey Wood open: 55 minutes away, 50% of its market in budget, a median of £1,250, and a warning that the figures rest on only 30 recorded tenancies.](docs/screenshot.png)
 
 ---
 
