@@ -1,0 +1,32 @@
+# Inputs that are too large or licensed, and have to be fetched by hand.
+# See docs/data-sources.md. The boundary files are small and ARE committed,
+# so the geography tests can run against real London shapes.
+/data/raw/*.osm.pbf
+/data/raw/*.zip
+/data/raw/*.xlsx
+/data/raw/*.xls
+/data/raw/*.csv
+
+# Everything the pipeline produces and can reproduce. The cell matrix is the
+# one slow artefact, so it is kept locally but never committed: at 2,895
+# squared it is tens of megabytes and it is derived from inputs that are not
+# in the repository anyway.
+/data/derived/
+
+# Anchored to the repository root. An unanchored "data/" would also match
+# frontend/public/data/, which is the published site data and must be
+# committed, since Netlify cannot run a Java routing engine over a 70MB
+# extract at deploy time.
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+frontend/dist/
+.DS_Store

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- The same geometry as src/components/Logo.tsx. Standalone, so the
+       colours are literal rather than variables, with a dark variant: a
+       browser tab strip follows the operating system, not the page. -->
+  <style>
+    .far  { stroke: #3987e5; }
+    .near { stroke: #184f95; }
+    .here { fill:   #d2541f; }
+    @media (prefers-color-scheme: dark) {
+      .far  { stroke: #2a78d6; }
+      .near { stroke: #86b6ef; }
+      .here { fill:   #eb6834; }
+    }
+  </style>
+  <path class="far"  d="M 26.65 8.54 A 13 13 0 1 0 26.65 23.46" fill="none" stroke-width="3.1" stroke-linecap="round"/>
+  <path class="near" d="M 22.55 11.41 A 8 8 0 1 0 22.55 20.59"  fill="none" stroke-width="3.1" stroke-linecap="round"/>
+  <circle class="here" cx="16" cy="16" r="3.4"/>
+</svg>

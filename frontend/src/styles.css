@@ -1,0 +1,1271 @@
+/* Commutable
+   ==========
+
+   The design brief, in short: a wayfinding tool. The vernacular it borrows
+   from is transport information design — the printed journey-time diagram,
+   the station sign, the timetable sheet — because that is the native idiom
+   of the thing it does, and because a tool for reading a city should look
+   like something you would find in that city rather than like a dashboard.
+
+   Three decisions carry it.
+
+   The ground is a cool pale grey-blue, the colour of a printed timetable,
+   not the warm cream that every generated page arrives in. It is chosen to
+   let the blue data ramp sit on it without competing: the ramp's palest
+   step was validated against this exact value.
+
+   One typeface, Archivo, doing everything. It descends from signage
+   grotesques, its figures are even and tabular, and width and weight carry
+   the whole hierarchy. Two families would have been a second voice in a
+   room where the only thing that should speak is the map.
+
+   The boldness is spent in exactly one place: the orange workplace marker.
+   It is the only warm colour anywhere, it appears once or twice, and it is
+   the thing the whole map is measured from. */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,75..125,400..700&display=swap');
+
+:root {
+  /* Tells the browser which way to render form controls, scrollbars and
+     focus rings, which are drawn by the platform and not by this file. */
+  color-scheme: light;
+
+  --surface: #eef1f5;
+  --surface-raised: #ffffff;
+  --surface-sunk: #e3e7ed;
+  --ink: #0f1620;
+  --ink-soft: #46505f;
+  --ink-faint: #6b7686;
+  --line: #ced5de;
+  --line-strong: #aeb8c6;
+
+  /* The journey-time accent. One hue, one job. */
+  --accent: #d2541f;
+  --accent-ink: #ffffff;
+
+  /* Blue, steps 300 to 700, light to dark. The paler steps of the ramp were
+     tried and dropped: against this surface the lightest sat at 1.4:1, so a
+     district with nothing in budget faded into the page and could not be
+     told from one that was never measured. */
+  --bin-0: #6da7ec;
+  --bin-1: #3987e5;
+  --bin-2: #256abf;
+  --bin-3: #184f95;
+  --bin-4: #0d366b;
+
+  /* Journey time, strongest first: the shortest trip is the darkest step,
+     because for time less is better and for a share more is. The constant
+     across both ramps is that the strongest colour is the better answer. */
+  --time-0: #7c2d0c;
+  --time-1: #a0390e;
+  --time-2: #bd4b17;
+  --time-3: #cd6a30;
+  --time-4: #d68b55;
+
+  --out: #cfcdc6;
+  --waiting: #dfe4ea;
+  --nodata: #e4e3dd;
+  --nodata-line: #b9b7ae;
+
+  --focus: #1c5cab;
+
+  --radius: 3px;
+  --gutter: 16px;
+}
+
+/* The theme lives on the root element, not on the app's own wrapper.
+   It was on the wrapper first, and the headings stayed dark-on-dark. The
+   reason is that `body` sets `color: var(--ink)`, and a custom property is
+   resolved where it is used: on `body`, which sits outside the wrapper, so
+   it always picked up the light value. Everything that inherited its colour
+   from `body` then inherited an already-resolved light ink, whatever the
+   wrapper said. Only elements that named a variable themselves changed, so
+   the controls looked right and every heading did not. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --surface: #11161d;
+  --surface-raised: #1a212b;
+  --surface-sunk: #0b0f14;
+  --ink: #f3f5f8;
+  --ink-soft: #b3bdca;
+  --ink-faint: #8b9099;
+  --line: #2b333f;
+  --line-strong: #3f4956;
+
+  --accent: #eb6834;
+  --accent-ink: #11161d;
+
+  /* Steps 150 to 550, selected for this surface rather than flipped from
+     the light ramp. On a dark page the eye reads bright as more, which is
+     the opposite ordering, so brightest is the most choice. */
+  --bin-0: #1c5cab;
+  --bin-1: #2a78d6;
+  --bin-2: #5598e7;
+  --bin-3: #86b6ef;
+  --bin-4: #b7d3f6;
+
+  --time-0: #fcd4b4;
+  --time-1: #f6a97c;
+  --time-2: #ee6f3b;
+  --time-3: #c55526;
+  --time-4: #a0471c;
+
+  --out: #3a3d44;
+  --waiting: #1d242e;
+  --nodata: #262a31;
+  --nodata-line: #434954;
+
+  --focus: #86b6ef;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  /* Every figure on this page sits in a column beside another figure, so
+     proportional numerals would make the columns ripple. */
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- shell */
+
+/* A column, not a grid with named rows.
+   It was a grid with three rows, which was right until a fourth child
+   appeared: the banner that a build from fabricated data puts at the top.
+   The stage then landed on an implicit row, the controls inherited the
+   flexible one and collapsed to 32px, and the fields spilled over the map.
+   A flex column takes however many children it is given and leaves the
+   last one the rest of the height, which is the behaviour that was wanted
+   in the first place. */
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--surface);
+}
+
+.shell > .stage {
+  flex: 1 1 auto;
+}
+
+.shell > .synthetic,
+.shell > .top,
+.shell > .controls {
+  flex: 0 0 auto;
+}
+
+.shell-loading,
+.shell-failed {
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  padding: var(--gutter);
+  text-align: center;
+}
+
+.failure {
+  max-width: 46ch;
+  color: var(--ink-soft);
+}
+
+.synthetic {
+  margin: 0;
+  padding: 8px var(--gutter);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gutter);
+  padding: 14px var(--gutter) 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ------------------------------------------------------------------- mark */
+
+/* The dot is the workplace and the rings are the reach around it, so the
+   mark is coloured from the same variables as the map rather than from a
+   palette of its own. Change the ramp and the logo follows. */
+.logo {
+  flex: 0 0 auto;
+  display: block;
+}
+
+.logo-far {
+  stroke: var(--bin-1);
+}
+
+.logo-near {
+  stroke: var(--bin-3);
+}
+
+.logo-here {
+  fill: var(--accent);
+}
+
+/* The brand is now a mark beside two lines of text. */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.brand h1 {
+  /* The one place the type is allowed to be a visual element. Archivo's
+     wider widths read as a destination board. */
+  font-size: 23px;
+  font-stretch: 112%;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.brand p {
+  margin: 1px 0 0;
+  color: var(--ink-faint);
+  font-size: 13px;
+}
+
+.top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+button {
+  font: inherit;
+  font-variant-numeric: inherit;
+}
+
+.ghost {
+  padding: 6px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.ghost:hover {
+  border-color: var(--ink-soft);
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------- controls */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 18px;
+  padding: 12px var(--gutter);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-raised);
+}
+
+.field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.field-label {
+  color: var(--ink-faint);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.field input[type='text'],
+.field input[type='number'],
+.field select {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  color: var(--ink);
+  font: inherit;
+  font-variant-numeric: inherit;
+}
+
+.field input[type='text'] {
+  width: 262px;
+  max-width: 100%;
+}
+
+.field input::placeholder {
+  color: var(--ink-faint);
+}
+
+.field-error {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 262px;
+  max-width: 70vw;
+  margin: 4px 0 0;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.combo {
+  position: relative;
+}
+
+.combo-busy {
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  transform: translateY(-50%);
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+
+.combo-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 3px);
+  left: 0;
+  width: 262px;
+  max-width: 80vw;
+  max-height: 290px;
+  margin: 0;
+  padding: 3px;
+  overflow-y: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  box-shadow: 0 10px 28px -14px rgb(15 22 32 / 45%);
+  list-style: none;
+}
+
+.combo-list button {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.combo-list button.is-highlighted {
+  background: var(--surface-sunk);
+}
+
+.combo-kind {
+  color: var(--ink-faint);
+  font-size: 11px;
+}
+
+.chosen {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 7px 10px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.chosen-name {
+  font-weight: 600;
+}
+
+.chosen-clear {
+  color: var(--ink-faint);
+  font-size: 11px;
+}
+
+.chosen:hover .chosen-clear {
+  color: var(--accent);
+}
+
+.add-second {
+  align-self: flex-end;
+  padding: 7px 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.add-second:hover:not(:disabled) {
+  border-color: var(--ink-soft);
+  color: var(--ink);
+}
+
+.add-second:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.money {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-left: 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  color: var(--ink-faint);
+}
+
+.money input {
+  width: 94px;
+  border: 0 !important;
+  background: transparent !important;
+  padding-left: 2px !important;
+}
+
+.field-slider {
+  flex: 1 1 190px;
+  max-width: 280px;
+}
+
+.slider-value {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+input[type='range'] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--bin-2);
+}
+
+/* ---------------------------------------------------------------- stage */
+
+.stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 372px;
+  min-height: 0;
+}
+
+.stage-map {
+  position: relative;
+  min-height: 0;
+  border-right: 1px solid var(--line);
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+  /* The tooltip is positioned against this box, so it can be flipped at
+     the edges without reading the window. */
+  position: relative;
+}
+
+.map svg {
+  display: block;
+  cursor: grab;
+  touch-action: none;
+}
+
+.map svg.is-dragging {
+  cursor: grabbing;
+}
+
+.district {
+  stroke: var(--surface);
+  /* A 2px gap in the surface colour between fills, so neighbouring
+     districts read as separate areas rather than as one blended field. */
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transition: fill 120ms linear;
+  cursor: pointer;
+}
+
+.district.is-out {
+  cursor: default;
+}
+
+.district.is-hovered {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.district.is-selected {
+  stroke: var(--ink);
+  stroke-width: 2.5;
+}
+
+.district:focus-visible {
+  outline: none;
+  stroke: var(--focus);
+  stroke-width: 3;
+}
+
+.hatch-ground {
+  fill: var(--nodata);
+}
+
+.hatch-line {
+  stroke: var(--nodata-line);
+  stroke-width: 2.5;
+}
+
+.district-label {
+  fill: var(--ink);
+  stroke: var(--surface);
+  paint-order: stroke;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+/* The place name under the code. Lighter and smaller, because the two are
+   not equals: the code identifies the data and the name only helps you
+   find it. Drawn with the same halo so it stays legible over any fill. */
+.district-label-name {
+  font-weight: 500;
+  opacity: 0.82;
+}
+
+.pin-halo {
+  fill: var(--accent);
+  opacity: 0.28;
+}
+
+.pin-dot {
+  fill: var(--accent);
+  stroke: var(--surface-raised);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.map-reset,
+.map-busy {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  color: var(--ink-soft);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.map-busy {
+  cursor: default;
+}
+
+/* --------------------------------------------------------------- legend */
+
+.legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  max-width: 272px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface-raised) 93%, transparent);
+  backdrop-filter: blur(5px);
+}
+
+.legend-lead {
+  margin: 0 0 7px;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.legend-ramp,
+.legend-rest {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legend-ramp li,
+.legend-rest li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+}
+
+.legend-ramp li + li,
+.legend-rest li + li {
+  margin-top: 3px;
+}
+
+.legend-rest {
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  border-radius: 2px;
+  background: var(--bin-0);
+}
+
+.swatch[data-bin='1'] {
+  background: var(--bin-1);
+}
+.swatch[data-bin='2'] {
+  background: var(--bin-2);
+}
+.swatch[data-bin='3'] {
+  background: var(--bin-3);
+}
+.swatch[data-bin='4'] {
+  background: var(--bin-4);
+}
+
+/* The same swatches, keyed on the other ramp. Scoped to the time legend
+   rather than given their own class, so the markup is identical in both
+   views and only the meaning of data-bin changes. */
+.legend-ramp.is-time .swatch {
+  background: var(--time-0);
+}
+
+.legend-ramp.is-time .swatch[data-bin='1'] {
+  background: var(--time-1);
+}
+
+.legend-ramp.is-time .swatch[data-bin='2'] {
+  background: var(--time-2);
+}
+
+.legend-ramp.is-time .swatch[data-bin='3'] {
+  background: var(--time-3);
+}
+
+.legend-ramp.is-time .swatch[data-bin='4'] {
+  background: var(--time-4);
+}
+
+.swatch-out {
+  background: var(--out);
+}
+
+/* The hatch again, so the key matches the map. It is the only thing
+   separating the two grey states, which are too close in lightness to be
+   told apart by colour. */
+.swatch-nodata {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--nodata) 0 3px,
+    var(--nodata-line) 3px 5px
+  );
+}
+
+/* --------------------------------------------------------------- answer */
+
+.stage-answer {
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--surface-raised);
+}
+
+.answer {
+  padding: 16px var(--gutter) 28px;
+}
+
+.answer-empty h2 {
+  max-width: 22ch;
+  margin-bottom: 8px;
+  font-size: 24px;
+  font-stretch: 105%;
+  line-height: 1.2;
+}
+
+.answer-empty p,
+.headline p {
+  max-width: 44ch;
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+}
+
+.answer-note {
+  color: var(--ink-faint) !important;
+  font-size: 13px;
+}
+
+.headline h2 {
+  max-width: 26ch;
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+/* ------------------------------------------------------- ranked results */
+
+.ranked {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.ranked h3 {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.ranked ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ranked button {
+  display: grid;
+  /* The district column takes the slack rather than the share column.
+     It used to be a fixed 3.6em, which fitted a bare code and clipped
+     every place name added under it to "Chadw...". The three number
+     columns are the ones with a known width, so they are the fixed ones. */
+  grid-template-columns: 1fr 3.9em 3.8em 4.4em;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ranked li + li button {
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+}
+
+.ranked button:hover {
+  background: var(--surface-sunk);
+}
+
+.ranked button.is-selected {
+  background: var(--surface-sunk);
+  box-shadow: inset 2px 0 0 var(--ink);
+}
+
+.ranked-district {
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ranked-name {
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-name {
+  font-weight: 400;
+  color: var(--ink-soft);
+  margin-left: 8px;
+}
+
+.ranked-share {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ranked-minutes,
+.ranked-median {
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+.ranked-legend {
+  margin: 9px 0 0;
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+
+/* --------------------------------------------------------------- detail */
+
+.detail {
+  margin-top: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.detail header,
+.sheet header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.detail header h3 {
+  font-size: 17px;
+  font-stretch: 108%;
+  font-weight: 700;
+}
+
+.detail header button,
+.sheet header button {
+  padding: 3px 7px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-faint);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.detail dl {
+  margin: 0;
+  padding: 4px 12px 10px;
+}
+
+.detail dl > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.detail dl > div + div {
+  border-top: 1px solid var(--line);
+}
+
+.detail dt {
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.detail dd {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+.detail-bin {
+  color: var(--ink-faint);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.detail-caveat {
+  margin: 0;
+  padding: 9px 12px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+/* ---------------------------------------------------------------- sheet */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: start center;
+  padding: var(--gutter);
+  overflow-y: auto;
+  background: rgb(8 12 18 / 52%);
+}
+
+.sheet {
+  width: min(720px, 100%);
+  margin: min(6vh, 60px) 0;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+}
+
+.sheet header {
+  position: sticky;
+  top: 0;
+  background: var(--surface-raised);
+}
+
+.sheet header h2 {
+  font-size: 19px;
+}
+
+.sheet section {
+  padding: 14px 18px;
+}
+
+.sheet section + section {
+  border-top: 1px solid var(--line);
+}
+
+.sheet h3 {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.sheet p {
+  max-width: 68ch;
+  margin: 7px 0 0;
+  color: var(--ink-soft);
+}
+
+.limits {
+  max-width: 68ch;
+  margin: 7px 0 0;
+  padding-left: 18px;
+  color: var(--ink-soft);
+}
+
+.limits li + li {
+  margin-top: 5px;
+}
+
+.sources {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.sources th,
+.sources td {
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+  vertical-align: top;
+  font-weight: 400;
+}
+
+.sources th {
+  width: 14em;
+  color: var(--ink-soft);
+}
+
+.licence {
+  display: block;
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+
+.vintages {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.vintages > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  border-top: 1px solid var(--line);
+}
+
+.vintages dt {
+  color: var(--ink-soft);
+}
+
+.vintages dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------- narrow screens */
+
+@media (max-width: 940px) {
+  .stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(400px, 56vh) minmax(0, auto);
+  }
+
+  /* The key becomes a strip across the foot of the map rather than a panel
+     in the corner of it. At this width the corner panel covered about half
+     the city, which is a poor trade for a legend that can be read in one
+     line. */
+  .legend {
+    right: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 14px;
+    max-width: none;
+    padding: 7px 10px;
+  }
+
+  .legend-lead {
+    width: 100%;
+    margin: 0;
+  }
+
+  .legend-ramp,
+  .legend-rest {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+  }
+
+  .legend-rest {
+    margin: 0;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .legend-ramp li + li,
+  .legend-rest li + li {
+    margin-top: 0;
+  }
+
+  .stage-map {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .stage-answer {
+    overflow-y: visible;
+  }
+
+  .shell {
+    height: auto;
+    min-height: 100%;
+  }
+
+  .legend {
+    max-width: calc(100% - 24px);
+  }
+}
+
+@media (max-width: 620px) {
+  .top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+  }
+
+  .field input[type='text'],
+  .combo-list {
+    width: 100%;
+  }
+
+  .field:has(input[type='text']) {
+    flex: 1 1 100%;
+  }
+
+  .field-slider {
+    max-width: none;
+  }
+
+  .ranked button {
+    grid-template-columns: 3.4em 1fr 3.7em;
+  }
+
+  .ranked-median {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .district {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------- tooltip */
+
+/* What the pointer is on. The map answers in five colour bins, which is
+   deliberately imprecise; this is where the exact figures live, so it is
+   wordy where the map is not. Not interactive and never focusable: it
+   follows the pointer, and anything reachable only by pointing is
+   unreachable by keyboard, so the same facts are also on each district's
+   own aria-label. */
+.tip {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  padding: 9px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  color: var(--ink);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.tip-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 7px;
+  margin: 0 0 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tip-name strong {
+  font-size: 0.92rem;
+}
+
+.tip-name span {
+  color: var(--ink-soft);
+}
+
+.tip-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 2px 0;
+}
+
+.tip-line span {
+  color: var(--ink-soft);
+}
+
+.tip-hint {
+  display: block;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+/* A tooltip needs a pointer, and a touch screen has none: tapping a
+   district opens the panel, which says more and stays open. */
+@media (hover: none) {
+  .tip {
+    display: none;
+  }
+}
+
+/* ----------------------------------------------------------- view switch */
+
+.legend-views {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 8px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-sunk);
+}
+
+.legend-views button {
+  flex: 1 1 0;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.legend-views button.is-on {
+  background: var(--surface-raised);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.legend-views button:hover:not(.is-on) {
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------ skip link */
+
+.skip {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 10;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  color: var(--ink);
+  font-size: 0.85rem;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.2);
+  /* Off screen until focused, rather than display:none, which would take
+     it out of the tab order and so out of existence. */
+  transform: translateY(-200%);
+}
+
+.skip:focus {
+  transform: none;
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* The answer panel is a focus target for the skip link, so it must not
+   draw a focus ring when it is focused programmatically. */
+.stage-answer:focus {
+  outline: none;
+}

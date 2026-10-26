@@ -1,0 +1,48 @@
+# Netlify builds the front end only. It cannot build the data: that needs a
+# Java routing engine, a 70MB street network extract and a timetable feed
+# behind a licence acceptance. So frontend/public/data is committed and
+# deployed as-is, and is rebuilt locally whenever the timetable is refreshed.
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Everything is a static file and the app is client-side routed, so any path
+# that is not a real file falls through to the page itself.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# The journey time files are immutable for a given build: a rebuild of the
+# data changes what is in them, and a deploy replaces the whole directory.
+# A year is safe because the site is redeployed whenever they change.
+[[headers]]
+  for = "/data/times/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# The rest of the data changes with the same deploy but is small enough that
+# revalidating costs nothing.
+[[headers]]
+  for = "/data/*.json"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/data/*.geojson"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # The site talks to exactly one outside service, postcodes.io, and only
+    # when a visitor types a full postcode. Fonts come from Google Fonts.
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.postcodes.io; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"

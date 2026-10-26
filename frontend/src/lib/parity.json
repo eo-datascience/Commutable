@@ -1,0 +1,602 @@
+{
+ "generated_by": "scripts/make_parity_fixtures.py",
+ "note": "Written by the Python implementation in pipeline/rent.py. The TypeScript tests in frontend/src/lib/affordability.test.ts assert the browser reproduces these. Regenerate with python scripts/make_parity_fixtures.py; CI regenerates and fails if the result differs from the committed file.",
+ "z_quartile": 0.6744897501960817,
+ "cases": [
+  {
+   "label": "cheap and tight",
+   "figures": {
+    "median": 950.0,
+    "lowerQuartile": 876.14,
+    "upperQuartile": 1030.09,
+    "sample": 500,
+    "mu": 6.8564631120534365,
+    "sigma": 0.11999853258077729,
+    "wellFitted": true
+   },
+   "shareUnder": [
+    {
+     "budget": 475.0,
+     "share": 3.817910376735512e-09
+    },
+    {
+     "budget": 665.0,
+     "share": 0.0014777107386221289
+    },
+    {
+     "budget": 807.5,
+     "share": 0.08781231174021736
+    },
+    {
+     "budget": 902.5,
+     "share": 0.33452261468022526
+    },
+    {
+     "budget": 950.0,
+     "share": 0.49999625169579215
+    },
+    {
+     "budget": 997.5,
+     "share": 0.6578418575527963
+    },
+    {
+     "budget": 1140.0,
+     "share": 0.9356634804562554
+    },
+    {
+     "budget": 1425.0,
+     "share": 0.999636127980376
+    },
+    {
+     "budget": 1900.0,
+     "share": 0.9999999961816635
+    },
+    {
+     "budget": 2850.0,
+     "share": 1.0
+    }
+   ],
+   "budgetForShare": [
+    {
+     "share": 0.05,
+     "budget": 779.8355707478296
+    },
+    {
+     "share": 0.1,
+     "budget": 814.5850194121625
+    },
+    {
+     "share": 0.25,
+     "budget": 876.1395060913654
+    },
+    {
+     "share": 0.5,
+     "budget": 950.0010710865113
+    },
+    {
+     "share": 0.75,
+     "budget": 1030.0894193114996
+    },
+    {
+     "share": 0.9,
+     "budget": 1107.9285937725697
+    },
+    {
+     "share": 0.95,
+     "budget": 1157.2978572906843
+    }
+   ],
+   "maxFitError": 1.1274594855517775e-06
+  },
+  {
+   "label": "typical outer",
+   "figures": {
+    "median": 1400.0,
+    "lowerQuartile": 1239.94,
+    "upperQuartile": 1580.72,
+    "sample": 500,
+    "mu": 7.244227168120176,
+    "sigma": 0.18000084361797686,
+    "wellFitted": true
+   },
+   "shareUnder": [
+    {
+     "budget": 700.0,
+     "share": 5.886686286349363e-05
+    },
+    {
+     "budget": 980.0,
+     "share": 0.02376670448971474
+    },
+    {
+     "budget": 1190.0,
+     "share": 0.18329564785993863
+    },
+    {
+     "budget": 1330.0,
+     "share": 0.3878375926104234
+    },
+    {
+     "budget": 1400.0,
+     "share": 0.5000007701393336
+    },
+    {
+     "budget": 1470.0,
+     "share": 0.6068264526456972
+    },
+    {
+     "budget": 1680.0,
+     "share": 0.8444447749091402
+    },
+    {
+     "budget": 2100.0,
+     "share": 0.987857030245598
+    },
+    {
+     "budget": 2800.0,
+     "share": 0.9999411340652417
+    },
+    {
+     "budget": 4200.0,
+     "share": 0.9999999994807408
+    }
+   ],
+   "budgetForShare": [
+    {
+     "share": 0.05,
+     "budget": 1041.2239008616566
+    },
+    {
+     "share": 0.1,
+     "budget": 1111.590115215051
+    },
+    {
+     "share": 0.25,
+     "budget": 1239.9402154230609
+    },
+    {
+     "share": 0.5,
+     "budget": 1399.9995135236409
+    },
+    {
+     "share": 0.75,
+     "budget": 1580.7202746446048
+    },
+    {
+     "share": 0.9,
+     "budget": 1763.2386353914683
+    },
+    {
+     "share": 0.95,
+     "budget": 1882.3988157056872
+    }
+   ],
+   "maxFitError": 3.4748311366326693e-07
+  },
+  {
+   "label": "typical inner",
+   "figures": {
+    "median": 1850.0,
+    "lowerQuartile": 1573.51,
+    "upperQuartile": 2175.08,
+    "sample": 500,
+    "mu": 7.522941904757055,
+    "sigma": 0.24000116578360853,
+    "wellFitted": true
+   },
+   "shareUnder": [
+    {
+     "budget": 925.0,
+     "share": 0.0019378626173251479
+    },
+    {
+     "budget": 1295.0,
+     "share": 0.06862071744973058
+    },
+    {
+     "budget": 1572.5,
+     "share": 0.24915126131385001
+    },
+    {
+     "budget": 1757.5,
+     "share": 0.41538070544130606
+    },
+    {
+     "budget": 1850.0,
+     "share": 0.4999983598819739
+    },
+    {
+     "budget": 1942.5,
+     "share": 0.5805447405595693
+    },
+    {
+     "budget": 2220.0,
+     "share": 0.7762726778212621
+    },
+    {
+     "budget": 2775.0,
+     "share": 0.9544310538997014
+    },
+    {
+     "budget": 3700.0,
+     "share": 0.998062086723918
+    },
+    {
+     "budget": 5550.0,
+     "share": 0.9999976474505166
+    }
+   ],
+   "budgetForShare": [
+    {
+     "share": 0.05,
+     "budget": 1246.5999910329904
+    },
+    {
+     "share": 0.1,
+     "budget": 1360.1741681567132
+    },
+    {
+     "share": 0.25,
+     "budget": 1573.5092237107567
+    },
+    {
+     "share": 0.5,
+     "budget": 1850.0018253675676
+    },
+    {
+     "share": 0.75,
+     "budget": 2175.078926955473
+    },
+    {
+     "share": 0.9,
+     "budget": 2516.226843582436
+    },
+    {
+     "share": 0.95,
+     "budget": 2745.4731096438536
+    }
+   ],
+   "maxFitError": 9.866851716553258e-07
+  },
+  {
+   "label": "expensive",
+   "figures": {
+    "median": 2900.0,
+    "lowerQuartile": 2368.75,
+    "upperQuartile": 3550.39,
+    "sample": 500,
+    "mu": 7.972465473465206,
+    "sigma": 0.3000009018980136,
+    "wellFitted": true
+   },
+   "shareUnder": [
+    {
+     "budget": 1450.0,
+     "share": 0.010430746190695284
+    },
+    {
+     "budget": 2030.0,
+     "share": 0.11723732641149348
+    },
+    {
+     "budget": 2465.0,
+     "share": 0.2940035249066553
+    },
+    {
+     "budget": 2755.0,
+     "share": 0.43212158361256736
+    },
+    {
+     "budget": 2900.0,
+     "share": 0.5000007214309008
+    },
+    {
+     "budget": 3045.0,
+     "share": 0.5645971648150894
+    },
+    {
+     "budget": 3480.0,
+     "share": 0.7283195392721677
+    },
+    {
+     "budget": 4350.0,
+     "share": 0.9117400395039572
+    },
+    {
+     "budget": 5800.0,
+     "share": 0.9895693538139283
+    },
+    {
+     "budget": 8700.0,
+     "share": 0.9998748885863658
+    }
+   ],
+   "budgetForShare": [
+    {
+     "share": 0.05,
+     "budget": 1770.4834120559276
+    },
+    {
+     "share": 0.1,
+     "budget": 1974.3585670254126
+    },
+    {
+     "share": 0.25,
+     "budget": 2368.750642515179
+    },
+    {
+     "share": 0.5,
+     "budget": 2899.9984267232853
+    },
+    {
+     "share": 0.75,
+     "budget": 3550.3909630891585
+    },
+    {
+     "share": 0.9,
+     "budget": 4259.606646663024
+    },
+    {
+     "share": 0.95,
+     "budget": 4750.109951740064
+    }
+   ],
+   "maxFitError": 5.42509211958657e-07
+  },
+  {
+   "label": "very expensive",
+   "figures": {
+    "median": 4800.0,
+    "lowerQuartile": 4138.06,
+    "upperQuartile": 5567.82,
+    "sample": 500,
+    "mu": 8.476370809586728,
+    "sigma": 0.2200007604715411,
+    "wellFitted": true
+   },
+   "shareUnder": [
+    {
+     "budget": 2400.0,
+     "share": 0.0008145201926811341
+    },
+    {
+     "budget": 3360.0,
+     "share": 0.05248283346356991
+    },
+    {
+     "budget": 4080.0,
+     "share": 0.23003909849144433
+    },
+    {
+     "budget": 4560.0,
+     "share": 0.40782294195463753
+    },
+    {
+     "budget": 4800.0,
+     "share": 0.5000007023341058
+    },
+    {
+     "budget": 5040.0,
+     "share": 0.5877552717001444
+    },
+    {
+     "budget": 5760.0,
+     "share": 0.7963723152644153
+    },
+    {
+     "budget": 7200.0,
+     "share": 0.9673368531945649
+    },
+    {
+     "budget": 9600.0,
+     "share": 0.999185489625473
+    },
+    {
+     "budget": 14400.0,
+     "share": 0.999999703797358
+    }
+   ],
+   "budgetForShare": [
+    {
+     "share": 0.05,
+     "budget": 3342.5917602943186
+    },
+    {
+     "share": 0.1,
+     "budget": 3620.7211253994383
+    },
+    {
+     "share": 0.25,
+     "budget": 4138.060801329643
+    },
+    {
+     "share": 0.5,
+     "budget": 4799.998140915937
+    },
+    {
+     "share": 0.75,
+     "budget": 5567.821078267685
+    },
+    {
+     "share": 0.9,
+     "budget": 6363.368333222484
+    },
+    {
+     "share": 0.95,
+     "budget": 6892.849562570525
+    }
+   ],
+   "maxFitError": 3.8730917973831916e-07
+  },
+  {
+   "label": "very wide spread",
+   "figures": {
+    "median": 1700.0,
+    "lowerQuartile": 1254.97,
+    "upperQuartile": 2302.85,
+    "sample": 500,
+    "mu": 7.438384414068511,
+    "sigma": 0.4499963255107674,
+    "wellFitted": true
+   },
+   "shareUnder": [
+    {
+     "budget": 850.0,
+     "share": 0.06173855306252907
+    },
+    {
+     "budget": 1190.0,
+     "share": 0.21399979442192163
+    },
+    {
+     "budget": 1445.0,
+     "share": 0.3589906349217489
+    },
+    {
+     "budget": 1615.0,
+     "share": 0.4546236554397383
+    },
+    {
+     "budget": 1700.0,
+     "share": 0.49999921627219623
+    },
+    {
+     "budget": 1785.0,
+     "share": 0.5431693295538609
+    },
+    {
+     "budget": 2040.0,
+     "share": 0.6573201792964865
+    },
+    {
+     "budget": 2550.0,
+     "share": 0.8162161990628714
+    },
+    {
+     "budget": 3400.0,
+     "share": 0.9382609683275812
+    },
+    {
+     "budget": 5100.0,
+     "share": 0.9926843468713251
+    }
+   ],
+   "budgetForShare": [
+    {
+     "share": 0.05,
+     "budget": 810.9499406559713
+    },
+    {
+     "share": 0.1,
+     "budget": 954.9804979265169
+    },
+    {
+     "share": 0.25,
+     "budget": 1254.9694452727563
+    },
+    {
+     "share": 0.5,
+     "budget": 1700.0015028418106
+    },
+    {
+     "share": 0.75,
+     "budget": 2302.848982140994
+    },
+    {
+     "share": 0.9,
+     "budget": 3026.2451599161295
+    },
+    {
+     "share": 0.95,
+     "budget": 3563.72812275778
+    }
+   ],
+   "maxFitError": 8.840245944905772e-07
+  },
+  {
+   "label": "narrow, at the floor",
+   "figures": {
+    "median": 1500.0,
+    "lowerQuartile": 1488.91,
+    "upperQuartile": 1511.17,
+    "sample": 500,
+    "mu": 7.313219812971288,
+    "sigma": 0.01100081699223219,
+    "wellFitted": true
+   },
+   "shareUnder": [
+    {
+     "budget": 750.0,
+     "share": 0.0
+    },
+    {
+     "budget": 1050.0,
+     "share": 0.0
+    },
+    {
+     "budget": 1275.0,
+     "share": 0.0
+    },
+    {
+     "budget": 1425.0,
+     "share": 1.5609818994621882e-06
+    },
+    {
+     "budget": 1500.0,
+     "share": 0.5000208203034912
+    },
+    {
+     "budget": 1575.0,
+     "share": 0.9999954004921112
+    },
+    {
+     "budget": 1800.0,
+     "share": 1.0
+    },
+    {
+     "budget": 2250.0,
+     "share": 1.0
+    },
+    {
+     "budget": 3000.0,
+     "share": 1.0
+    },
+    {
+     "budget": 4500.0,
+     "share": 1.0
+    }
+   ],
+   "budgetForShare": [
+    {
+     "share": 0.05,
+     "budget": 1473.1011437761076
+    },
+    {
+     "share": 0.1,
+     "budget": 1479.0003490991685
+    },
+    {
+     "share": 0.25,
+     "budget": 1488.9104274053825
+    },
+    {
+     "share": 0.5,
+     "budget": 1499.9991388217268
+    },
+    {
+     "share": 0.75,
+     "budget": 1511.1704337962296
+    },
+    {
+     "share": 0.9,
+     "budget": 1521.2960685481603
+    },
+    {
+     "share": 0.95,
+     "budget": 1527.3882760679548
+    }
+   ],
+   "maxFitError": 5.741188488173065e-07
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+# The pipeline. Pinned loosely: these are stable libraries and the pipeline
+# runs on a person's laptop rather than in a reproducible build.
+
+# Geometry and tables
+geopandas>=1.0
+shapely>=2.0
+pandas>=2.0
+pyogrio>=0.8
+pyproj>=3.6
+numpy>=1.26
+
+# Reading the ONS workbook
+openpyxl>=3.1
+
+# Routing. Needs Java 17 or newer and about 8GB of memory. This is the only
+# heavy dependency, and only scripts/build.py without --synthetic uses it.
+r5py>=1.1,<2.0
+
+# Reading building footprints out of the OpenStreetMap extract, to weight the
+# grid cells inside each district. Optional: without it the weighting falls
+# back to an unweighted median and says so in the log.
+osmium>=3.6
+
+# Tests and linting
+pytest>=8.0
+ruff>=0.6

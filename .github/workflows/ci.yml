@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pipeline:
+    name: Pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # r5py pulls in a Java routing engine and is the one heavy dependency.
+      # Nothing in the test suite routes anything: the routing engine is
+      # somebody else's well tested code, and what is tested here is the
+      # aggregation around it, which is where the interesting decisions are.
+      # So it is left out and the import is guarded at the point of use.
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install geopandas shapely pandas pyogrio pyproj numpy openpyxl pytest ruff
+
+      - name: Lint
+        run: ruff check pipeline tests scripts
+
+      - name: Test
+        run: pytest -q
+
+      # The affordability calculation exists in Python and in TypeScript. The
+      # fixtures are written by the Python side and asserted by the
+      # TypeScript tests, so if the Python side changes and the fixtures are
+      # not regenerated, the two implementations have silently diverged.
+      - name: Parity fixtures are current
+        run: |
+          python scripts/make_parity_fixtures.py
+          if ! git diff --quiet -- frontend/src/lib/parity.json; then
+            echo "::error::parity.json is out of date. Run scripts/make_parity_fixtures.py and commit the result."
+            git --no-pager diff -- frontend/src/lib/parity.json
+            exit 1
+          fi
+
+  site:
+    name: Site
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # ci rather than install, so the lockfile is what is actually tested.
+      # An earlier project in this series passed locally and failed here
+      # because a devDependency had been dropped from package.json while
+      # node_modules still held it.
+      - name: Install
+        run: npm ci
+
+      - name: Types
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npx vite build
+
+      # The published data is committed, because Netlify cannot run a Java
+      # routing engine over a 70MB extract at deploy time. If it goes
+      # missing the site deploys and shows a blank map, so its presence is
+      # checked rather than assumed.
+      - name: The published data is present
+        run: |
+          test -f dist/data/meta.json
+          test -f dist/data/districts.geojson
+          test -f dist/data/rents.json
+          count=$(find dist/data/times -name '*.bin' | wc -l)
+          echo "$count journey time files"
+          test "$count" -gt 100
