@@ -78,6 +78,13 @@ DISTRICT_PATTERN = re.compile(r"^[A-Z]{1,2}[0-9][A-Z0-9]?$")
 # The real release uses ".." for not available and "." for not
 # applicable, both documented on its Notes sheet. The rest are markers
 # other editions and other ONS releases have used.
+#
+# The en dash and em dash below are not punctuation and must stay. They
+# are characters ONS actually prints in the cell, and a spreadsheet
+# written in Excel uses them freely. Replacing them with a hyphen to
+# tidy the file would make the parser read a withheld figure as a real
+# one, which is the exact mistake this set exists to prevent, and it
+# would do it silently.
 SUPPRESSED = {"..", ".", ":", "-", "–", "—", "c", "x", "z", "n/a", "na", ""}
 
 # Column headings seen across editions of this release, normalised to the

@@ -50,15 +50,15 @@ types, the sampling resolution inside a postcode district, and the cost of the
 whole thing, which grows with the square.
 
 At 750 m, Greater London is about 2,900 cells, the matrix is 8.4 million
-journeys, and a cell is roughly a nine-minute walk across — inside the noise of
-a forty-minute commute. At 400 m the matrix is three and a half times larger for
+journeys, and a cell is roughly a nine-minute walk across, which is inside the
+noise of a forty-minute commute. At 400 m the matrix is three and a half times larger for
 precision the data underneath cannot support, because rents are published per
 postcode district and a district is far coarser than any of this.
 
 ### Districts smaller than a cell
 
 Fifty-five districts contain only one cell, and twenty-nine contain no cell
-centre at all. They are the central ones — EC3V, W1B and their neighbours are a
+centre at all. They are the central ones. EC3V, W1B and their neighbours are a
 few streets each, drawn for sorting-office rounds. Those districts borrow the
 cell they sit inside.
 
@@ -88,7 +88,7 @@ sum to zero, the parameters separate and there is nothing to iterate:
 
 ```
 mu    = the mean of the three log quantiles
-sigma = (log UQ − log LQ) / (2 × 0.6744897501960817)
+sigma = (log UQ - log LQ) / (2 × 0.6744897501960817)
 ```
 
 No optimiser to fail to converge, no starting point, no hidden tolerance.
@@ -107,8 +107,9 @@ numbers. The fitted curve answers only "what share is under this budget".
 Three identical quartiles give a sigma of about 5 × 10⁻¹⁶, not zero. It is
 positive, it passes any test for zero, and it turns the share under a budget
 into a step function: a pound under the median reaches none of the market and a
-pound over reaches all of it. The guard is therefore a floor of 0.01 — an
-interquartile range of about 1.4% of the median — not a comparison with zero.
+pound over reaches all of it. The guard is therefore a floor of 0.01, an
+interquartile range of about 1.4% of the median, rather than a comparison with
+zero.
 
 ---
 
@@ -130,11 +131,11 @@ quartiles rather than a measurement that deserves a smooth scale.
 
 Every value was chosen by running a palette validator rather than by eye:
 
-- **Light mode** uses blue ramp steps 300–700. The paler steps were tried first
+- **Light mode** uses blue ramp steps 300 to 700. The paler steps were tried first
   and rejected: against this page's surface the lightest sat at 1.4 : 1, so a
   district with nothing in budget faded into the background and could not be
   told apart from one that was never measured.
-- **Dark mode** uses steps 150–550, selected for the dark surface rather than
+- **Dark mode** uses steps 150 to 550, selected for the dark surface rather than
   flipped from the light ramp. On a dark page the eye reads bright as *more*,
   which is the opposite ordering.
 - The workplace marker is `#d2541f` on light and `#eb6834` on dark, both above
@@ -152,22 +153,22 @@ The texture is doing real work rather than decorating.
 **Ring winding.** The first map rendered as a single flat grey rectangle. The
 published GeoJSON was correct and every coordinate was right. d3-geo treats a
 polygon as a region on a sphere, where a ring divides the surface into two parts
-and the winding order says which one is inside — and its convention is the
+and the winding order says which one is inside. Its convention is the
 *opposite* of RFC 7946. A counter-clockwise exterior ring is therefore not drawn
 backwards; it is drawn as the entire earth minus that district. All 274
 districts were wound one way and the city outline, which came from unioning the
 boroughs, happened to be wound the other, so the page showed a correct outline
 over a sheet of grey.
 
-The fix keeps the published files standards-compliant — other tools will read
-them — and turns the rings round once in the browser, in `frontend/src/lib/geo.ts`.
+The fix keeps the published files standards-compliant, so other tools will read
+them, and turns the rings round once in the browser, in `frontend/src/lib/geo.ts`.
 A pipeline test now checks the winding of every published polygon with a
 shoelace calculation written out longhand, rather than with the library that
 produced the file.
 
 **A grid with three rows and four children.** `.shell` was a CSS grid with
 `grid-template-rows: auto auto minmax(0, 1fr)`. That was right until a fourth
-child appeared — the banner a synthetic build puts at the top. The stage then
+child appeared, the banner a synthetic build puts at the top. The stage then
 landed on an implicit row, the controls inherited the flexible one and collapsed
 to 32 px, and the input fields spilled over the map. It is a flex column now,
 which takes however many children it is given.
@@ -187,7 +188,7 @@ already the serialisation format and browser storage is the obvious next step.
 
 **A basemap.** The city is drawn from its own 274 district polygons and nothing
 else: no tiles, no API key, no request to anybody else's server, no attribution
-bar. That also makes a tile library the wrong tool — MapLibre is around 800 KB
+bar. That also makes a tile library the wrong tool. MapLibre is around 800 KB
 compressed and exists to stitch tiles under an interactive camera. With no tiles
 to stitch, 274 SVG paths draw in a frame, every shape is a DOM node that hovers
 and focuses without hit-testing of our own, and the whole thing themes with the

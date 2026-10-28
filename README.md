@@ -7,7 +7,7 @@ shaded by how much of its rental market your budget actually reaches, and
 everywhere you could not get to in time is greyed out. Add a second workplace
 for a partner or a second job and the map answers for both.
 
-Live site: _(add the URL once deployed)_
+Live site: **[commutable.netlify.app](https://commutable.netlify.app)**
 
 ![Commutable showing where a £1,200 budget reaches within 60 minutes of Canary Wharf. Districts within reach are shaded blue by the share of their one bedroom market the budget covers, everywhere beyond the time limit is grey, and districts with no published rent figures are hatched. The panel on the right has SE2 Abbey Wood open: 55 minutes away, 50% of its market in budget, a median of £1,250, and a warning that the figures rest on only 30 recorded tenancies.](docs/screenshot.png)
 
@@ -157,7 +157,7 @@ data and total on screen, in [docs/design-notes.md](docs/design-notes.md).
 ```bash
 pip install -r requirements.txt
 python scripts/fetch_boundaries.py      # the only inputs that download themselves
-# then fetch the other three — see docs/data-sources.md
+# then fetch the other three, listed in docs/data-sources.md
 python scripts/build.py                 # routing takes a few minutes
 cd frontend && npm install && npm run dev
 ```
@@ -229,4 +229,4 @@ same configuration that produced the numbers.
 
 ## Who built this
 
-Emmanuel Olusolade — [GitHub](https://github.com/eo-datascience)
+Emmanuel Olusolade. [GitHub](https://github.com/eo-datascience)

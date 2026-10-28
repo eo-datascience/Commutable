@@ -9,7 +9,7 @@ it there rather than renaming the file.
 
 ---
 
-## 1. Boundaries — automatic
+## 1. Boundaries: automatic
 
 ```bash
 python scripts/fetch_boundaries.py
@@ -30,7 +30,7 @@ nothing else changes.
 
 ---
 
-## 2. Rents — one spreadsheet
+## 2. Rents: one spreadsheet
 
 **ONS, _Private rental market in London_**
 
@@ -66,7 +66,7 @@ used if present and not required.
 
 ---
 
-## 3. Street network — one extract
+## 3. Street network: one extract
 
 **Geofabrik, Greater London**
 
@@ -89,7 +89,7 @@ in the log.
 
 ---
 
-## 4. Timetables — two GTFS feeds
+## 4. Timetables: two GTFS feeds
 
 This is the one that needed correcting. **TfL does not publish GTFS.** It
 publishes XML, and its journey planner timetables are TransXChange, which R5

@@ -1,8 +1,8 @@
 // The visitor's question, kept in the URL.
 //
 // This is how sharing works, and it is why there are no accounts. A link
-// carries the whole question — both workplaces, the budget, the bedroom
-// count, the time limit — so sending somebody your answer is copying the
+// carries the whole question, both workplaces, the budget, the bedroom
+// count and the time limit, so sending somebody your answer is copying the
 // address bar. No sign-up, no saved searches to lose, no database holding
 // where strangers work.
 //
